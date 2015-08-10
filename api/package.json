@@ -1,0 +1,15 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "github-graphs-api",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "obernal",
+  "license": "ISC",
+  "dependencies": {
+    "github": "^0.2.4",
+    "express": "^4.13.3"
+  }
+}
