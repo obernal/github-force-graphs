@@ -1,25 +1,5 @@
 module.exports = function(options) {
-  var config = require('./config.json');
-  var GitHubApi = require("github");
-  var github = new GitHubApi({
-      // required
-      version: "3.0.0",
-      // optional
-      debug: true,
-      protocol: "https",
-      host: "api.github.com", // should be api.github.com for GitHub
-      timeout: 5000,
-      headers: {
-          "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
-      }
-  });
-
-  github.authenticate({
-      type: "basic",
-      username: config['github-user'],
-      password: config['github-token']
-  });
-
+  var github = require('./github-api')().github_client;
 
   function GitHubFollowGraph(user, callback) {
     this.nodes = [];
@@ -82,7 +62,8 @@ module.exports = function(options) {
       console.log(self.users_processed)
       console.log(self.nodes.length)
       if (self.users_processed + 1 == self.max_users){
-          var json = {"nodes":self.nodes, "links":self.links}
+          var today = new Date();
+          var json = {"date": today.getTime() ,"nodes":self.nodes, "links":self.links}
           console.log(JSON.stringify(json));
           var fs = require('fs');
           fs.writeFile("data/" + self.username + ".json",JSON.stringify(json) , function(err) {
@@ -95,7 +76,6 @@ module.exports = function(options) {
           self.callback(json);
       }else{
           self.users_processed ++;
-          //console.log(self.nodes);
           var newuser = self.nodes[self.users_processed].login
           console.log("adding " + newuser)
 
@@ -113,7 +93,6 @@ module.exports = function(options) {
         }, function(err, json) {
         add_followers(json, user);
         user.followers_added = true;
-        //self.update();
       });
     }
 
@@ -129,11 +108,9 @@ module.exports = function(options) {
       if (link = this.find_link(follower, following))
         return;
 
-      //link = {source: follower.login, target: following.login};
       var source = self.nodes.map(function(e) { return e.login; }).indexOf(follower.login);
       var target = self.nodes.map(function(e) { return e.login; }).indexOf(following.login);
       link = {source: source, target: target};
-      //link = {source: self.nodes.indexOf({"name":follower.login, "group":"users"}), target: self.nodes.indexOf({"name":following.login,"group":"users"})};
       if (link.source >=0 && link.target >=0){
           this.links.push(link);
       }
@@ -142,19 +119,29 @@ module.exports = function(options) {
 
   var graph_gh_followers = function(user,callback) {
     var fs = require('fs');
-
     if (fs.existsSync("data/" + user + ".json")) {
       fs.readFile("data/" + user + ".json", 'utf8', function (err,data) {
         if (err) {
           return console.log(err);
         }
-        callback(JSON.parse(data));
+        var ONE_HOUR = 60 * 60 * 1000;
+        var json = JSON.parse(data);
+        var expiry_date = new Date(json.date + ONE_HOUR);
+        var today = new Date();
+        if (expiry_date > today){
+          callback(json);
+        }else{
+          graph(user,callback);
+        }
       });
-
     }else{
-      var graph = new GitHubFollowGraph(user, callback);
-      graph.add_user(user, true);
+      graph(user,callback);
     }
+  }
+
+  var graph = function(user, callback){
+    var graph = new GitHubFollowGraph(user, callback);
+    graph.add_user(user, true);
   }
 
   return {

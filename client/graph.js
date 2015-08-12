@@ -77,22 +77,6 @@ function graph(json_url, callback) {
     .attr("xlink:href", function(d){
       if (d.avatar_url){
         return d.avatar_url;
-      }else{
-        if (endsWith(d.filename, "html")){
-          return "file-icons/PNG/html.png";
-        }else if (endsWith(d.filename, "png")){
-          return "file-icons/PNG/png.png";
-        }else if (endsWith(d.filename, "jpg")){
-          return "file-icons/PNG/jpg.png";
-        }else if (endsWith(d.filename, "js")){
-          return "file-icons/PNG/js.png";
-        }else if (endsWith(d.filename, "css") || endsWith(d.filename, "scss")){
-          return "file-icons/PNG/css.png";
-        }else if (endsWith(d.filename, "java")){
-          return "file-icons/PNG/java.png";
-        }else{
-          return "file-icons/PNG/txt.png";
-        }
       }
     });
 
@@ -136,6 +120,8 @@ function graph(json_url, callback) {
         return "file-icons/PNG/css.png";
       }else if (endsWith(d.filename, "java")){
         return "file-icons/PNG/java.png";
+      }else if (endsWith(d.filename, "scala")){
+        return "file-icons/PNG/scala.png";
       }else{
         return "file-icons/PNG/txt.png";
       }

@@ -1,29 +1,7 @@
 module.exports = function(options) {
-  var GitHubApi = require("github");
-  var username = options.user;
-  var repository = options.repo;
-  var config = require('./config.json');
-  var github = new GitHubApi({
-    // required
-    version: "3.0.0",
-    // optional
-    debug: true,
-    protocol: "https",
-    host: "api.github.com", // should be api.github.com for GitHub
-    timeout: 5000,
-    headers: {
-      "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
-    }
-  });
-
-  github.authenticate({
-    type: "basic",
-    username: config['github-user'],
-    password: config['github-token']
-  });
 
   function GitHubReposApi(user,callback) {
-
+    var github = require('./github-api')().github_client;
     this.callback = callback;
     this.repos = [];
     this.current_page = 1;
