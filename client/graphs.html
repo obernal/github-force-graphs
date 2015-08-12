@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  font-size: 10px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  pointer-events: none;
+}
+
+.d3-tip span {
+  color: #ff00c7;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="jquery-1.11.3.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="graph.js"></script>
+</head>
+<body>
+	<div class="page-header">
+	  <h1>Github Graphs <small>Slide Show</small></h1>
+	</div>
+  <button type="button" id="start" class="btn btn-default btn-lg">
+    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
+  </button>
+
+  <button type="button" id="stop" class="btn btn-default btn-lg">
+    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
+  </button>
+	<div id="graph"></div>
+<script>
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+var index = 0;
+var repos = [];
+var success_load = function(success){
+  if (success == true){
+    update_h1(false);
+    start_timer();
+  }
+}
+
+var timer = null,
+    interval = 60000,
+    value = 0;
+
+var stop_timer = function() {
+  clearInterval(timer);
+  timer = null
+};
+
+function start_timer() {
+  if (timer !== null) return;
+  timer = setInterval(function () {
+    index = index + 1;
+    if (index >= repos.length){
+      index = 0;
+    }
+    update_h1(true);
+    var url = "http://localhost:3000/repo-graph?user=" + getParameterByName('username') + "&repo=" +  repos[index].name;
+    graph(url, success_load);
+
+  }, interval);
+}
+
+$("#start").click(start_timer());
+
+$("#stop").click(stop_timer());
+
+$.getJSON('/'+ getParameterByName('username') +'/repos', function(json){
+  repos = json;
+
+  update_h1(true);
+  graph("/repo-graph?user=" + getParameterByName('username') + "&repo=" +  repos[index].name, success_load);
+
+});
+
+function update_h1(loading){
+  var stringLoading = "";
+  if (loading == true){
+    stringLoading = "Loading... ";
+  }
+  d3.select("h1").html(stringLoading + "<a href='" + index + "' >"  + getParameterByName('username') + "<small>/"+ repos[index].name +"</small> "+ "</a>");
+}
+
+</script>

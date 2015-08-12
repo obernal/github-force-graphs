@@ -64,69 +64,89 @@ module.exports = function(options) {
     }, function(err, json) {
 
         self.commits = json;
-        for (var i=0;i<self.commits.length;i++){
-          var index = self.nodes.map(function(e) { return e.login; }).indexOf(self.commits[i].author.login);
-          if (index < 0){
-            self.nodes.push(self.commits[i].author);
+        if (self.commits != undefined){
+          for (var i=0;i<self.commits.length;i++){
+            //console.log(self.commits.length);
+            //console.log(self.commits[i]);
+            if (self.commits[i].author != null){
+              var index = self.nodes.map(function(e) { return e.login; }).indexOf(self.commits[i].author.login);
+              if (index < 0){
+                self.nodes.push(self.commits[i].author);
+              }
+            }
           }
-        }
-        console.log("self.nodes" + self.nodes);
+          //console.log("self.nodes" + self.nodes);
 
-        self.get_commit_detail(user, repo, 0);
+          self.get_commit_detail(user, repo, 0);
+
+        }//else{
+          //do nothing for now
+        //}
 
     });
     };
 
     this.get_commit_detail = function(user, repo, commit_index){
       console.log("Getting commit " + commit_index);
-      var commit = self.commits[commit_index].sha;
-      github.repos.getCommit({
-          user : user,
-          repo: repo,
-          sha: commit
-      }, function(err, json) {
-          //console.log("hello");
-          //console.log(JSON.stringify(json));
-          var commit = json;
-          console.log(commit.sha)
-          for (var file in commit.files){
+      if (self.commits.length < 1){
+        self.write_response();
+      }else{
+        var commit = self.commits[commit_index].sha;
+        github.repos.getCommit({
+            user : user,
+            repo: repo,
+            sha: commit
+        }, function(err, json) {
+            //console.log("hello");
+            //console.log(JSON.stringify(json));
+            var commit = json;
+            console.log(commit.sha)
+            for (var file in commit.files){
 
-            var index = self.nodes.map(function(e) { return e.filename; }).indexOf(commit.files[file].filename);
-            if (index < 0){
-              self.nodes.push(commit.files[file]);
-            }
-            self.linkUserToFile(commit.author,commit.files[file]);
-          }
-
-          if (commit_index >= self.commits.length -1){
-            if (self.current_page >= self.pages){
-              var json = {"nodes":self.nodes, "links":self.links}
-              console.log(JSON.stringify(json));
-              var fs = require('fs');
-
-              fs.writeFile("data/" + self.repo_user + "-" + self.repo + ".json",JSON.stringify(json) , function(err) {
-                if(err) {
-                  return console.log(err);
+              if (commit.author != null){
+                var index = self.nodes.map(function(e) { return e.filename; }).indexOf(commit.files[file].filename);
+                if (index < 0){
+                  self.nodes.push(commit.files[file]);
                 }
 
-                console.log("The file was saved!");
-                self.callback(json);
-              });
-            }else{
-              self.current_page = self.current_page + 1;
-              console.log(self.current_page);
-              self.get_commits(self.repo_user, self.repo, self.current_page);
+                self.linkUserToFile(commit.author,commit.files[file]);
+              }
             }
 
-          }else{
-            console.log("commit index" + commit_index);
-            var newindex = commit_index + 1;
+            if (commit_index >= self.commits.length -1){
+              if (self.current_page >= self.pages){
+                self.write_response();
+              }else{
+                self.current_page = self.current_page + 1;
+                console.log(self.current_page);
+                self.get_commits(self.repo_user, self.repo, self.current_page);
+              }
 
-            self.get_commit_detail(user, repo, newindex);
-          }
+            }else{
+              console.log("commit index" + commit_index);
+              var newindex = commit_index + 1;
 
-      });
+              self.get_commit_detail(user, repo, newindex);
+            }
+
+        });
+      }
     };
+
+    this.write_response = function(){
+      var json = {"nodes":this.nodes, "links":this.links}
+      console.log(JSON.stringify(json));
+      var fs = require('fs');
+
+      fs.writeFile("data/" + this.repo_user + "-" + this.repo + ".json",JSON.stringify(json) , function(err) {
+        if(err) {
+          return console.log(err);
+        }
+
+        console.log("The file was saved!");
+      });
+      this.callback(json);
+    }
 
     this.linkUserToFile = function(user, file){
       var link = null;
@@ -137,24 +157,6 @@ module.exports = function(options) {
       var source = self.nodes.map(function(e) { return e.login; }).indexOf(user.login);
       var target = self.nodes.map(function(e) { return e.filename; }).indexOf(file.filename);
       link = {source: source, target: target};
-      if (link.source >=0 && link.target >=0){
-          this.links.push(link);
-      }
-
-      //this.update();
-    }
-
-
-    this.follow = function(follower, following){
-      var link = null;
-      if (link = this.find_link(follower, following))
-        return;
-
-      //link = {source: follower.login, target: following.login};
-      var source = self.nodes.map(function(e) { return e.login; }).indexOf(follower.login);
-      var target = self.nodes.map(function(e) { return e.login; }).indexOf(following.login);
-      link = {source: source, target: target};
-      //link = {source: self.nodes.indexOf({"name":follower.login, "group":"users"}), target: self.nodes.indexOf({"name":following.login,"group":"users"})};
       if (link.source >=0 && link.target >=0){
           this.links.push(link);
       }

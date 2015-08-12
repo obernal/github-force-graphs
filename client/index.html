@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  font-size: 10px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  pointer-events: none;
+}
+
+.d3-tip span {
+  color: #ff00c7;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="jquery-1.11.3.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="graph.js"></script>
+</head>
+<body>
+	<div class="page-header">
+	  <h1>Github Graphs <small>beta</small></h1>
+	</div>
+	<form id= "githubform" class="form-inline">
+	  <div class="form-group">
+	    <label for="username">User</label>
+	    <input type="text" class="form-control" id="username" placeholder="google">
+	  </div>
+	  <div class="form-group">
+	    <label for="repo">Repository</label>
+	    <input type="text" class="form-control" id="repo" placeholder="material-design-lite">
+	  </div>
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary active">
+        <input type="radio" name="options" id="option1" autocomplete="off" checked> Repository
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="option2" autocomplete="off"> Followers
+      </label>
+    </div>
+	  <button type="submit" id="submit-button" data-loading-text="Loading..." class="btn btn-default">Graph it!</button>
+	</form>
+	<div id="graph"></div>
+<script>
+
+d3.select("#githubform").on("submit", function(){
+  d3.event.preventDefault();
+  var url = "";
+  if ($('#option1').is(':checked')){
+    url = "http://localhost:3000/repo-graph?user=" + $('#username').val() + "&repo=" +  $('#repo').val();
+  }else{
+    url = "http://localhost:3000/followers-graph?user=" + $('#username').val();
+  }
+
+  graph(url, function(success){
+    //do something
+    return;
+  });
+});
+
+</script>

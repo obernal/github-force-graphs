@@ -1,8 +1,17 @@
 var express = require('express');
 var app = express();
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+app.use(express.static(__dirname + '/../' + 'client'));
+
+app.get('/:user/repos', function (req, res) {
+  res.header('Access-Control-Allow-Origin', "*");
+  var user_api = require('./user-api')({
+    user: req.params.user,
+  });
+  user_api.get_repos(req.params.user,function(json){
+    //console.log(json);
+    res.json(json);
+  });
 });
 
 app.get('/followers-graph', function (req, res) {
