@@ -35,7 +35,7 @@ module.exports = function(options) {
     }
 
     this.get_commits = function(user, repo, page){
-      console.log(user);
+      //console.log(user);
     github.repos.getCommits({
         user : user,
         repo: repo,
@@ -66,7 +66,7 @@ module.exports = function(options) {
     };
 
     this.get_commit_detail = function(user, repo, commit_index){
-      console.log("Getting commit " + commit_index);
+      //console.log("Getting commit " + commit_index);
       if (self.commits.length < 1){
         self.write_response();
       }else{
@@ -115,7 +115,7 @@ module.exports = function(options) {
     this.write_response = function(){
       var today = new Date();
       var json = {"date": today.getTime() ,"nodes":this.nodes, "links":this.links}
-      console.log(JSON.stringify(json));
+      //console.log(JSON.stringify(json));
       var fs = require('fs');
 
       fs.writeFile("data/" + this.repo_user + "-" + this.repo + ".json",JSON.stringify(json) , function(err) {

@@ -19,9 +19,7 @@ app.get('/followers-graph', function (req, res) {
   var followers_api = require('./followers-api')({
     user: req.query.user,
   });
-  console.log(followers_api);
   followers_api.graph_gh_followers(req.query.user,function(json){
-    console.log(json);
     res.json(json);
   });
 });
@@ -33,7 +31,6 @@ app.get('/repo-graph', function (req, res) {
     repo: req.query.repo
   });
   repos_api.graph_gh_repo(req.query.user, req.query.repo, function(json){
-    console.log(json);
     res.json(json);
   });
 });

@@ -99,15 +99,15 @@ function start_timer() {
       index = 0;
     }
     update_h1(true);
-    var url = "http://localhost:3000/repo-graph?user=" + getParameterByName('username') + "&repo=" +  repos[index].name;
+    var url = "/repo-graph?user=" + getParameterByName('username') + "&repo=" +  repos[index].name;
     graph(url, success_load);
 
   }, interval);
 }
 
-$("#start").click(start_timer());
+$("#start").click(start_timer);
 
-$("#stop").click(stop_timer());
+$("#stop").click(stop_timer);
 
 $.getJSON('/'+ getParameterByName('username') +'/repos', function(json){
   repos = json;

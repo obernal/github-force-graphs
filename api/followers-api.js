@@ -59,12 +59,12 @@ module.exports = function(options) {
         }
         self.follow(follower, user);
       }
-      console.log(self.users_processed)
-      console.log(self.nodes.length)
+      //console.log(self.users_processed)
+      //console.log(self.nodes.length)
       if (self.users_processed + 1 == self.max_users){
           var today = new Date();
           var json = {"date": today.getTime() ,"nodes":self.nodes, "links":self.links}
-          console.log(JSON.stringify(json));
+          //console.log(JSON.stringify(json));
           var fs = require('fs');
           fs.writeFile("data/" + self.username + ".json",JSON.stringify(json) , function(err) {
             if(err) {
@@ -77,7 +77,7 @@ module.exports = function(options) {
       }else{
           self.users_processed ++;
           var newuser = self.nodes[self.users_processed].login
-          console.log("adding " + newuser)
+          //console.log("adding " + newuser)
 
           if (newuser != undefined){
               self.add_user(self.nodes[self.users_processed].login,false);
