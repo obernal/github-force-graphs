@@ -1,4 +1,5 @@
 {
   "github-user":"",
-  "github-token" : ""
+  "github-token" : "",
+  "oauth-token" : ""
 }

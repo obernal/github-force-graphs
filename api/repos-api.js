@@ -5,7 +5,7 @@ module.exports = function(options) {
     this.commits = [];
     this.nodes = [];
     this.links = [];
-    this.pages = 2;
+    this.pages = 4;
     this.max_users = 30;
     this.users_processed = 0;
     this.current_page = 1;
@@ -113,7 +113,8 @@ module.exports = function(options) {
     };
 
     this.write_response = function(){
-      var json = {"nodes":this.nodes, "links":this.links}
+      var today = new Date();
+      var json = {"date": today.getTime() ,"nodes":this.nodes, "links":this.links}
       console.log(JSON.stringify(json));
       var fs = require('fs');
 
@@ -139,28 +140,35 @@ module.exports = function(options) {
       if (link.source >=0 && link.target >=0){
           this.links.push(link);
       }
-
-      //this.update();
     }
   }
 
   var graph_gh_repo = function(user, repo, callback) {
-
     var fs = require('fs');
     var filename = "data/" + user + "-" + repo + ".json";
-
     if (fs.existsSync(filename)) {
       fs.readFile(filename, 'utf8', function (err,data) {
         if (err) {
           return console.log(err);
         }
-        callback(JSON.parse(data));
+        var ONE_HOUR = 60 * 60 * 1000;
+        var json = JSON.parse(data);
+        var expiry_date = new Date(json.date + ONE_HOUR);
+        var today = new Date();
+        if (expiry_date > today){
+          callback(json);
+        }else{
+          graph(user,repo, callback);
+        }
       });
     }else{
-      var graph = new GitHubRepoGraph(user, repo, callback);
-      graph.get_commits(user, repo ,1);
+      graph(user, repo, callback);
     }
+  }
 
+  var graph = function(user, repo, callback){
+    var graph = new GitHubRepoGraph(user, repo, callback);
+    graph.get_commits(user, repo ,1);
   }
 
   return {

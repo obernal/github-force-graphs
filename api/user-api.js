@@ -5,7 +5,7 @@ module.exports = function(options) {
     this.callback = callback;
     this.repos = [];
     this.current_page = 1;
-    this.pages = 2;
+    this.pages = 4;
 
     var self = this;
     this.get_repos = function(user, page){

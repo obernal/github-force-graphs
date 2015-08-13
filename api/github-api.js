@@ -10,15 +10,24 @@ module.exports = function() {
       host: "api.github.com", // should be api.github.com for GitHub
       timeout: 5000,
       headers: {
-          "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
+          "user-agent": "GitHub-Force-Graphs" // GitHub is happy with a unique user agent
       }
   });
 
-  github.authenticate({
-      type: "basic",
-      username: config['github-user'],
-      password: config['github-token']
-  });
+  // OAuth2 Key/Secret
+  if (config['oauth-token']!= undefined){
+    github.authenticate({
+        type: "oauth",
+        token: config['oauth-token']
+    })
+  }else{
+    github.authenticate({
+        type: "basic",
+        username: config['github-user'],
+        password: config['github-token']
+    });
+
+  }
 
   return {
     github_client: github
