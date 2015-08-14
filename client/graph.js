@@ -11,8 +11,8 @@ function graph(json_url, callback) {
     $('#graph').empty();
     $('#submit-button').button('reset');
 
-    var width = 400 * Math.round(Math.log(graph.nodes.length)/Math.LN10) * 1.3;
-    var height = 300 * Math.round(Math.log(graph.nodes.length)/Math.LN10) * 1.3;
+    var width = 400 * Math.round(Math.log(graph.nodes.length)/Math.LN10) * 1.5;
+    var height = 300 * Math.round(Math.log(graph.nodes.length)/Math.LN10) * 1.5;
 
     var force = d3.layout.force()
     .charge(-600)
@@ -107,6 +107,9 @@ function graph(json_url, callback) {
     });
 
     file_node.append('svg:image')
+    //.attr('onload', function() {
+    //     alert('loaded');
+    //})
     .attr("xlink:href", function(d){
       if (endsWith(d.filename, "html")){
         return "file-icons/PNG/html.png";
