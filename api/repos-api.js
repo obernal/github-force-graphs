@@ -1,5 +1,6 @@
 module.exports = function(options) {
   var github = require('./github-api')().github_client;
+  var config = require('./config.json');
 
   function GitHubRepoGraph(user, repo, callback) {
     this.commits = [];
@@ -151,9 +152,9 @@ module.exports = function(options) {
         if (err) {
           return console.log(err);
         }
-        var ONE_HOUR = 60 * 60 * 1000;
+        var graph_ttl = config['graph-ttl'];
         var json = JSON.parse(data);
-        var expiry_date = new Date(json.date + ONE_HOUR);
+        var expiry_date = new Date(json.date + graph_ttl);
         var today = new Date();
         if (expiry_date > today){
           callback(json);

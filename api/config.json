@@ -1,5 +1,6 @@
 {
   "github-user":"",
   "github-token" : "",
-  "oauth-token" : ""
+  "oauth-token" : "",
+  "graph-ttl" : 36000000
 }

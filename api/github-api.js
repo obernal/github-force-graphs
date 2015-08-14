@@ -5,7 +5,7 @@ module.exports = function() {
       // required
       version: "3.0.0",
       // optional
-      debug: false,
+      debug: true,
       protocol: "https",
       host: "api.github.com", // should be api.github.com for GitHub
       timeout: 5000,
@@ -15,19 +15,19 @@ module.exports = function() {
   });
 
   // OAuth2 Key/Secret
-  if (config['oauth-token']!= undefined){
+  /*if (config['oauth-token']!= undefined){
     github.authenticate({
         type: "oauth",
         token: config['oauth-token']
     })
-  }else{
+  }else{*/
     github.authenticate({
         type: "basic",
         username: config['github-user'],
         password: config['github-token']
     });
 
-  }
+  //}
 
   return {
     github_client: github
