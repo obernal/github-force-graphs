@@ -36,6 +36,6 @@ The api provides two main resources which are quite self-explanatory:
 Client has two available interfaces:
 
 * `http://localhost:3000/index.html` shows a simple interface which graphs either a repo or a user graph based on the input
-* `http://localhost:3000/graphs.html?user=xxx` which plays a slide show of all repos available to the organization
+* `http://localhost:3000/graphs.html?username=xxx` which plays a slide show of all repos available to the organization
 
 
